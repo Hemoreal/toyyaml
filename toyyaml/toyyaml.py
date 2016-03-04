@@ -2,7 +2,7 @@
 
 from functools import partial
 from .yaml_value import get_enum
-from .base import multi
+from .base import multi, separate
 
 
 def get_indent(string):
@@ -15,7 +15,7 @@ def equal_indent(a, b):
 
 
 def get_pair(string):
-    key, value = tuple([enum.strip() for enum in string.split(":", 1)])
+    key, value = separate(string, ":")
     value, string = pair_value(value)
 
     return (key, value), string

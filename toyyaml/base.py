@@ -23,8 +23,9 @@ def choice_one(string, *args):
     return args[0](string) or choice_one(string, *args[1:])
 
 
-def separate(string, symbol):
-    return tuple([enum.strip() for enum in string.split(symbol, 1)])
+def separate(string, symbol, padding=True):
+    result = [enum.strip() for enum in string.split(symbol, 1)]
+    return fill(result) if padding else result
 
 
 def fill(enums):

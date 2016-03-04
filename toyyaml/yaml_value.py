@@ -2,11 +2,11 @@
 
 from functools import partial
 
-from .base import multi, left_match, right_match, choice_one, fill, separate
+from .base import multi, left_match, right_match, choice_one, separate
 
 
 def get_enum(string, separate_symbol):
-    enum, string = fill(separate(string, separate_symbol))
+    enum, string = separate(string, separate_symbol)
     return get_value(enum), string
 
 
