@@ -31,3 +31,13 @@ class TestYaml(unittest.TestCase):
 
         self.assertEquals(pair, ("aaa", dict(bb="cc", dd="ee")))
         self.assertEquals(string, "        ")
+
+    def test_get_pair_with_value_is_yaml_list(self):
+        pair, string = get_pair("""
+        aaa:
+            - bbcc
+            - ddee
+        """)
+
+        self.assertEquals(pair, ("aaa", ["bbcc", "ddee"]))
+        self.assertEquals(string, "        ")
