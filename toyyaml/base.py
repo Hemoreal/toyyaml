@@ -6,19 +6,17 @@ def left_match(string, match_func, left):
         return left(string[1:])
 
 
-def right_match(string, match_func):
+def right_match(string, match_func, right):
     if string and match_func(string):
-        return string[:-1]
+        return right(string[:-1])
 
 
-def multi(string, func, rest):
+def multi(string, cut):
     result = list()
-    enum, string = func(string)
-    while not rest(enum):
-        print "mutli:", enum
+    while string:
+        enum, string = cut(string)
         result.append(enum)
-        enum, string = func(string)
-    return result + [rest(enum)]
+    return result
 
 
 def choice_one(string, *args):

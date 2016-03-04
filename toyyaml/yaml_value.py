@@ -11,11 +11,7 @@ def get_enum(string, separate_symbol):
 
 
 def get_list(string, separate_symbol):
-    return multi(
-        string,
-        partial(get_enum, separate_symbol=separate_symbol),
-        partial(right_match, match_func=lambda x: x.endswith("]"))
-    )
+    return multi(string, partial(get_enum, separate_symbol=separate_symbol))
 
 
 def string_data(string):
@@ -23,11 +19,15 @@ def string_data(string):
 
 
 def list_data(string):
-    return left_match(string, lambda x: x.startswith("["), partial(get_list, separate_symbol=","))
-
-
-def pair_data(string):
-    return left_match(string, "")
+    return left_match(
+        string,
+        lambda x: x.startswith("["),
+        partial(
+            right_match,
+            match_func=lambda x: x.endswith("]"),
+            right=partial(get_list, separate_symbol=",")
+        )
+    )
 
 
 def get_value(string):
