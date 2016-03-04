@@ -21,3 +21,13 @@ class TestYaml(unittest.TestCase):
 
         self.assertEquals(pair, ("aaa", ["bb", "cc", "dd"]))
         self.assertEquals(string, "")
+
+    def test_get_pair_with_value_is_dict(self):
+        pair, string = get_pair("""
+        aaa:
+            bb: cc
+            dd: ee
+        """)
+
+        self.assertEquals(pair, ("aaa", dict(bb="cc", dd="ee")))
+        self.assertEquals(string, "        ")

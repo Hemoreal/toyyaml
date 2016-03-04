@@ -17,6 +17,15 @@ def multi(string, cut):
     return result
 
 
+def till(string, cut, condition):
+    result = list()
+    while string and condition(string):
+        enum, string = cut(string)
+        print "till: ", enum, string
+        result.append(enum)
+    return result, string
+
+
 def choice(condition, a, b):
     return a if condition else b
 
