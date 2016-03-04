@@ -2,7 +2,7 @@
 
 from functools import partial
 
-from .base import multi, left_match, right_match, choice_one, separate
+from .base import multi, left, right, choice_one, separate
 
 
 def get_enum(string, separate_symbol):
@@ -19,14 +19,11 @@ def string_data(string):
 
 
 def list_data(string):
-    return left_match(
-        string,
-        lambda x: x.startswith("["),
-        partial(
-            right_match,
-            match_func=lambda x: x.endswith("]"),
-            right=partial(get_list, separate_symbol=",")
-        )
+    return get_list(
+        left(*separate(
+            right(*separate(string, "[")), "]"
+        )),
+        ","
     )
 
 
