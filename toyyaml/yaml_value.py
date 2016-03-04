@@ -27,7 +27,21 @@ def list_data(string):
     )
 
 
+def int_data(string):
+    try:
+        return int(string)
+    except ValueError:
+        return None
+
+
+def float_data(string):
+    try:
+        return float(string)
+    except ValueError:
+        return None
+
+
 def get_value(string):
-    return choice_one(string, list_data, string_data)
+    return choice_one(string, list_data, int_data, float_data, string_data)
     # if string.startswith("\n"):
     #     return get_pair(string.strip("\n"))

@@ -2,7 +2,7 @@
 
 import unittest
 
-from toyyaml.yaml_value import get_enum
+from toyyaml.yaml_value import get_enum, get_value
 
 
 class TestYamlValue(unittest.TestCase):
@@ -15,3 +15,11 @@ class TestYamlValue(unittest.TestCase):
         enum, string = get_enum("aaa, aaa", ",")
         self.assertEquals(enum, "aaa")
         self.assertEquals(string, " aaa")
+
+    def test_get_int_value(self):
+        enum = get_value("  23 ")
+        self.assertEquals(enum, 23)
+
+    def test_get_float_value(self):
+        enum = get_value("  23.0 ")
+        self.assertEquals(enum, 23.0)
