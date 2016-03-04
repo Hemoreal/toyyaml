@@ -2,7 +2,7 @@
 
 from functools import partial
 
-from .base import multi, left, right, choice_one, separate
+from .base import multi, surround, choice_one, separate
 
 
 def get_enum(string, separate_symbol):
@@ -15,16 +15,12 @@ def get_list(string, separate_symbol):
 
 
 def string_data(string):
-    return string.strip()
+    result = surround(string, '"', '"')
+    return result if result is not None else string.strip()
 
 
 def list_data(string):
-    return get_list(
-        left(*separate(
-            right(*separate(string, "[")), "]"
-        )),
-        ","
-    )
+    return get_list(surround(string, "[", "]"), ",")
 
 
 def int_data(string):
@@ -43,5 +39,3 @@ def float_data(string):
 
 def get_value(string):
     return choice_one(string, list_data, int_data, float_data, string_data)
-    # if string.startswith("\n"):
-    #     return get_pair(string.strip("\n"))

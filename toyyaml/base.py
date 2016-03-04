@@ -34,6 +34,10 @@ def choice_one(string, *args):
     return args[0](string) or choice_one(string, *args[1:])
 
 
+def surround(string, start, end):
+    return string[0] == start and string[-1] == end and string[1:-1]
+
+
 def separate(string, symbol, reverse=False, padding=True):
     result = [enum for enum in choice(reverse, string.rsplit, string.split)(symbol, 1)]
     return fill(result) if padding else result
