@@ -14,4 +14,4 @@ class TestYamlValue(unittest.TestCase):
     def test_get_enum_split_by_comma(self):
         enum, string = get_enum("aaa, aaa", ",")
         self.assertEquals(enum, "aaa")
-        self.assertEquals(string, "aaa")
+        self.assertEquals(string, " aaa")

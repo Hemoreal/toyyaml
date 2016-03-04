@@ -26,7 +26,7 @@ def choice_one(string, *args):
 
 
 def separate(string, symbol, reverse=False, padding=True):
-    result = [enum.strip() for enum in choice(reverse, string.rsplit, string.split)(symbol, 1)]
+    result = [enum for enum in choice(reverse, string.rsplit, string.split)(symbol, 1)]
     return fill(result) if padding else result
 
 

@@ -15,7 +15,7 @@ def get_list(string, separate_symbol):
 
 
 def string_data(string):
-    return string
+    return string.strip()
 
 
 def list_data(string):
