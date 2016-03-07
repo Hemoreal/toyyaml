@@ -16,6 +16,14 @@ def equal_indent(a, indent):
     return get_indent(a) == indent
 
 
+def split_line(row):
+    return row.startswith("---")
+
+
+def remove_empty_line(string):
+    return "\n".join([row for row in string.split("\n") if row and len(row) > get_indent(row) and not split_line(row)])
+
+
 def get_pair(string):
     key, value = separate(string, ":")
     value, string = pair_value(value)
@@ -44,4 +52,4 @@ def get_dict(string):
 
 
 def load(string):
-    return dict(multi(string, get_pair))
+    return dict(multi(remove_empty_line(string), get_pair))
