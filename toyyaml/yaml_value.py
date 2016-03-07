@@ -16,11 +16,12 @@ def get_list(string, separate_symbol):
 
 def string_data(string):
     result = surround(string, '"', '"')
-    return result if result is not None else string.strip()
+    return result if result else string.strip()
 
 
 def list_data(string):
-    return get_list(surround(string, "[", "]"), ",")
+    result = surround(string.strip(), "[", "]")
+    return None if not result else get_list(result, ",")
 
 
 def int_data(string):

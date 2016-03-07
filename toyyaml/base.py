@@ -21,7 +21,6 @@ def till(string, cut, condition):
     result = list()
     while string and condition(string):
         enum, string = cut(string)
-        print "till: ", enum, string
         result.append(enum)
     return result, string
 
@@ -31,7 +30,8 @@ def choice(condition, a, b):
 
 
 def choice_one(string, *args):
-    return args[0](string) or choice_one(string, *args[1:])
+    result = args[0](string)
+    return result if result is not None else choice_one(string, *args[1:])
 
 
 def surround(string, start, end):
