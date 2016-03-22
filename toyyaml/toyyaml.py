@@ -20,8 +20,8 @@ def split_line(row):
     return row.startswith("---")
 
 
-def remove_empty_line(string):
-    return "\n".join([row for row in string.split("\n") if row and len(row) > get_indent(row) and not split_line(row)])
+def remove_comment(string):
+    return "\n".join([row for row in string.split("\n") if row and row.lstrip() and not split_line(row)])
 
 
 def get_pair(string):
@@ -41,7 +41,6 @@ def pair_value(string):
 
 def multi_string_data(string):
     def collector(stream):
-        print stream
         value, stream = separate(stream, "\n")
         return string_data(value), stream
     result, tail = till(string, collector, partial(equal_indent, indent=get_indent(string)))
@@ -66,7 +65,6 @@ def get_list(string):
     def collector(stream):
         result, stream = separate(right(*separate(stream, "-")), "\n")
         return get_value(result), stream
-
     return till(string, collector, partial(equal_indent, indent=get_indent(string)))
 
 
@@ -76,5 +74,5 @@ def get_dict(string):
 
 
 def load(string):
-    string = remove_empty_line(string)
+    string = remove_comment(string)
     return choice_one(string, lambda x: list_data(x), lambda x: dict(multi(x, pair_data)))
