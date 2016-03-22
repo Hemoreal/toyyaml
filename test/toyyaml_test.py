@@ -16,6 +16,15 @@ class TestYaml(unittest.TestCase):
         self.assertEquals(pair, ("aaa", "bbb"))
         self.assertEquals(string, "asdasd")
 
+    def test_get_multi_line_string_pair_value(self):
+        pair, string = get_pair("""aaa: |
+        asdasd
+        bbbbb
+        """)
+        self.assertEquals(pair, ("aaa", "asdasd\nbbbbb"))
+        self.assertEquals(string, "")
+
+
     def test_get_pair_with_value_is_list(self):
         pair, string = get_pair("aaa: [bb, cc, dd]")
 

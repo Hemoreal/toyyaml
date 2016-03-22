@@ -34,12 +34,27 @@ def pair_value(string):
     enum, r_string = separate(string, "\n")
     if not enum:
         return choice(string.strip().startswith("-"), get_list, get_dict)(r_string)
+    if enum.strip() in ("|", ">"):
+        return multi_string_data(r_string)
     return get_value(enum), r_string
+
+
+def multi_string_data(string):
+    def collector(stream):
+        print stream
+        value, stream = separate(stream, "\n")
+        return string_data(value), stream
+    result, tail = till(string, collector, partial(equal_indent, indent=get_indent(string)))
+    return "\n".join(result).rstrip(), tail
 
 
 def pair_data(string):
     line, tail = separate(string, "\n")
-    return choice(line.strip().endswith(":") or line.find(": ") != -1, get_pair, empty)(string)
+    if line.strip().endswith(":"):
+        return get_pair(string)
+    if line.find(": ") != -1:
+        return get_pair(string)
+    return None
 
 
 def list_data(string):
@@ -48,16 +63,15 @@ def list_data(string):
 
 
 def get_list(string):
-    def collect(stream):
+    def collector(stream):
         result, stream = separate(right(*separate(stream, "-")), "\n")
         return get_value(result), stream
 
-    enum, string = till(string, collect, partial(equal_indent, indent=get_indent(string)))
-    return enum, string
+    return till(string, collector, partial(equal_indent, indent=get_indent(string)))
 
 
 def get_dict(string):
-    enum, string = till(string, get_pair, partial(equal_indent, indent=get_indent(string)))
+    enum, string = till(string, pair_data, partial(equal_indent, indent=get_indent(string)))
     return dict(enum), string
 
 
