@@ -3,7 +3,7 @@
 from functools import partial
 
 from .yaml_value import get_value, string_data
-from .base import separate, till, multi, choice, right
+from .base import separate, till, multi, choice, right, empty, choice_one
 
 
 def get_indent(string):
@@ -37,6 +37,16 @@ def pair_value(string):
     return get_value(enum), r_string
 
 
+def pair_data(string):
+    line, tail = separate(string, "\n")
+    return choice(line.strip().endswith(":") or line.find(": ") != -1, get_pair, empty)(string)
+
+
+def list_data(string):
+    result = choice(string.strip().startswith("-"), get_list, empty)(string)
+    return result[0] if result else None
+
+
 def get_list(string):
     def collect(stream):
         result, stream = separate(right(*separate(stream, "-")), "\n")
@@ -52,4 +62,5 @@ def get_dict(string):
 
 
 def load(string):
-    return dict(multi(remove_empty_line(string), get_pair))
+    string = remove_empty_line(string)
+    return choice_one(string, lambda x: list_data(x), lambda x: dict(multi(x, pair_data)))
