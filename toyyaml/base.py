@@ -9,6 +9,10 @@ def right(_, b):
     return b
 
 
+def empty(string):
+    return None
+
+
 def multi(string, cut):
     result = list()
     while string:
