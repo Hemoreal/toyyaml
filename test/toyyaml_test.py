@@ -2,7 +2,7 @@
 
 import unittest
 
-from toyyaml.toyyaml import get_pair, load
+from toyyaml.toyyaml import get_pair, load, multi_string_data
 
 
 class TestYaml(unittest.TestCase):
@@ -23,7 +23,6 @@ class TestYaml(unittest.TestCase):
         """)
         self.assertEquals(pair, ("aaa", "asdasd\nbbbbb"))
         self.assertEquals(string, "")
-
 
     def test_get_pair_with_value_is_list(self):
         pair, string = get_pair("aaa: [bb, cc, dd]")
@@ -54,11 +53,22 @@ class TestYaml(unittest.TestCase):
     def test_load_list_datas(self):
         result = load("""
         - aaa
+
         - bbb
         """)
-        print result
         self.assertEquals(len(result), 2)
         self.assertEquals(result, ["aaa", "bbb"])
+
+    def test_success_get_multi_line_string_value_when_with_empty_line(self):
+        result, tail = multi_string_data("""
+            asd
+            aaa
+
+            bbb
+        - t
+        """)
+        self.assertEquals(result, "\nasd\naaa\n\nbbb")
+        self.assertEquals(tail, "        - t\n        ")
 
     def test_load_read_data(self):
         result = load("""

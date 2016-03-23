@@ -13,19 +13,30 @@ def empty(string):
     return None
 
 
-def multi(string, cut):
+def clear_empty_line(string):
+    if string.startswith("\n"):
+        return clear_empty_line(string[1:])
+    if string.lstrip(" ").startswith("\n"):
+        return clear_empty_line(string.lstrip(" ")[1:])
+    return string
+
+
+def multi(string, cut, skip_empty_line=True):
     result = list()
     while string:
         enum, string = cut(string)
         result.append(enum)
+        string = clear_empty_line(string) if skip_empty_line else string
     return result
 
 
-def till(string, cut, condition):
+def till(string, cut, condition, skip_empty_line=True):
     result = list()
     while string and condition(string):
         enum, string = cut(string)
         result.append(enum)
+        string = clear_empty_line(string) if skip_empty_line else string
+        print string
     return result, string
 
 

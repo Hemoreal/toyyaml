@@ -38,5 +38,9 @@ def float_data(string):
         return None
 
 
+def empty_data(string):
+    return None if string.strip() else ""
+
+
 def get_value(string):
-    return choice_one(string, list_data, int_data, float_data, string_data)
+    return choice_one(string, empty_data, list_data, int_data, float_data, string_data)
