@@ -9,7 +9,7 @@ def right(_, b):
     return b
 
 
-def empty(string):
+def empty(_):
     return None
 
 
