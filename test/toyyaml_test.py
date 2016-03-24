@@ -106,3 +106,4 @@ class TestYaml(unittest.TestCase):
             tag: dev
         """)
         self.assertEquals(len(result), 2)
+        self.assertEquals(len(result["tasks"]), 5)
