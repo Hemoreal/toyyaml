@@ -89,6 +89,10 @@ def get_dict(string):
     return dict(enum), tail
 
 
-def load(string):
+def loads(string):
     string = remove_comment(string.rstrip())
     return choice_one(string, lambda x: list_data(x), lambda x: dict(multi(clear_empty_line(x), pair_data)))
+
+
+def load(file_obj):
+    return loads(file_obj.read())

@@ -36,7 +36,6 @@ def till(string, cut, condition, skip_empty_line=True):
         enum, string = cut(string)
         result.append(enum)
         string = clear_empty_line(string) if skip_empty_line else string
-        print string
     return result, string
 
 

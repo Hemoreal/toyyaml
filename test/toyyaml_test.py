@@ -2,7 +2,7 @@
 
 import unittest
 
-from toyyaml.toyyaml import pair_data, load, multi_string_data
+from toyyaml.toyyaml import pair_data, loads, multi_string_data
 
 
 class TestYaml(unittest.TestCase):
@@ -54,7 +54,7 @@ class TestYaml(unittest.TestCase):
         self.assertEquals(string, "        ")
 
     def test_load_list_datas(self):
-        result = load("""
+        result = loads("""
         - aaa
 
         - bbb
@@ -74,7 +74,7 @@ class TestYaml(unittest.TestCase):
         self.assertEquals(tail, "        - t\n        ")
 
     def test_load_read_data(self):
-        result = load("""
+        result = loads("""
         project_name: mothership-admin
 
         tasks:
