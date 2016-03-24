@@ -2,22 +2,27 @@
 
 import unittest
 
-from toyyaml.toyyaml import get_pair, load, multi_string_data
+from toyyaml.toyyaml import pair_data, load, multi_string_data
 
 
 class TestYaml(unittest.TestCase):
     def test_get_pair_with_simple_dict(self):
-        pair, string = get_pair("aaa: bbb")
+        pair, string = pair_data("aaa: bbb")
         self.assertEquals(pair, ("aaa", "bbb"))
         self.assertEquals(string, "")
 
+    def test_success_split_key_and_value_when_key_and_value_has_quote(self):
+        pair, string = pair_data("aa:a: bb:b")
+        self.assertEquals(pair, ("aa:a", "bb:b"))
+        self.assertEquals(string, "")
+
     def test_get_pair_and_popup_string(self):
-        pair, string = get_pair("aaa: bbb\nasdasd")
+        pair, string = pair_data("aaa: bbb\nasdasd")
         self.assertEquals(pair, ("aaa", "bbb"))
         self.assertEquals(string, "asdasd")
 
     def test_get_multi_line_string_pair_value(self):
-        pair, string = get_pair("""aaa: |
+        pair, string = pair_data("""aaa: |
         asdasd
         bbbbb
         """)
@@ -25,14 +30,13 @@ class TestYaml(unittest.TestCase):
         self.assertEquals(string, "")
 
     def test_get_pair_with_value_is_list(self):
-        pair, string = get_pair("aaa: [bb, cc, dd]")
+        pair, string = pair_data("aaa: [bb, cc, dd]")
 
         self.assertEquals(pair, ("aaa", ["bb", "cc", "dd"]))
         self.assertEquals(string, "")
 
     def test_get_pair_with_value_is_dict(self):
-        pair, string = get_pair("""
-        aaa:
+        pair, string = pair_data("""aaa:
             bb: cc
             dd: ee
         """)
@@ -41,8 +45,7 @@ class TestYaml(unittest.TestCase):
         self.assertEquals(string, "        ")
 
     def test_get_pair_with_value_is_yaml_list(self):
-        pair, string = get_pair("""
-        aaa:
+        pair, string = pair_data("""aaa:
             - bbcc
             - ddee
         """)

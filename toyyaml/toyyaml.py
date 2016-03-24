@@ -24,21 +24,6 @@ def remove_comment(string):
     return "\n".join([row for row in string.split("\n") if not split_line(row)])
 
 
-def get_pair(string):
-    key, value = separate(string, ":")
-    value, string = pair_value(value)
-    return (string_data(key), value), string
-
-
-def pair_value(string):
-    enum, tail = separate(string, "\n")
-    if not enum:
-        return choice(string.strip().startswith("-"), get_list, get_dict)(tail)
-    if enum.strip() in ("|", ">"):
-        return multi_string_data(tail)
-    return get_value(enum), tail
-
-
 def multi_string_data(string):
     def collector(stream):
         value, stream = separate(stream, "\n")
@@ -56,13 +41,30 @@ def multi_string_data(string):
     return "\n".join(result).rstrip(), tail
 
 
+def pair_with_simple_data_value(string):
+    def _get_pair(stream):
+        head, tail = separate(stream, ": ")
+        enum, tail = separate(tail, "\n")
+        if enum.strip() in ("|", ">"):
+            value, tail = multi_string_data(tail)
+        else:
+            value = get_value(enum)
+        return (string_data(head), value), tail
+
+    return choice(separate(string, "\n")[0].find(": ") != -1, _get_pair, empty)(string)
+
+
+def pair_with_complicate_data_value(string):
+    def _get_pair(stream):
+        key, tail = separate(stream, ":\n")
+        value, tail = choice(tail.strip().startswith("-"), get_list, get_dict)(tail)
+        return (string_data(key), value), tail
+
+    return choice(separate(string, "\n")[0].strip().endswith(":"), _get_pair, empty)(string)
+
+
 def pair_data(string):
-    line, tail = separate(string, "\n")
-    if line.strip().endswith(":"):
-        return get_pair(string)
-    if line.find(": ") != -1:
-        return get_pair(string)
-    return None
+    return choice_one(string, pair_with_complicate_data_value, pair_with_simple_data_value)
 
 
 def list_data(string):

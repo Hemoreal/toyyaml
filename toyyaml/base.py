@@ -45,8 +45,10 @@ def choice(condition, a, b):
 
 
 def choice_one(string, *args):
-    result = args[0](string)
-    return result if result is not None else choice_one(string, *args[1:])
+    def _get_result(stream):
+        result = args[0](stream)
+        return result if result is not None else choice_one(stream, *args[1:])
+    return choice(args, _get_result, empty)(string)
 
 
 def surround(string, start, end):
