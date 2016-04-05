@@ -2,14 +2,12 @@
 
 from functools import partial
 
-from .yaml_value import get_value, string_data
-from .base import separate, till, multi, choice, right, empty, choice_one, clear_empty_line
+from .yaml_value import get_value, string_value
+from .base import separate, multi, choice, left, right, none, choice_one, clear_empty_line
 
 
 def get_indent(string):
-    if string and string[0] == " ":
-        return 1 + get_indent(string[1:])
-    return 0
+    return len(string) - len(string.lstrip(" "))
 
 
 def equal_indent(a, indent):
@@ -27,14 +25,13 @@ def remove_comment(string):
 def multi_string_data(string):
     def collector(stream):
         value, stream = separate(stream, "\n")
-        return string_data(value) if value else "", stream
+        return string_value(value) if value else "", stream
 
     filtered = clear_empty_line(string)
-    result, tail = till(
+    result, tail = multi(
         filtered,
         collector,
-        lambda x: equal_indent(x, get_indent(filtered)) or x.lstrip(" ").startswith("\n"),
-        False
+        lambda x: equal_indent(x, get_indent(filtered)) or x.lstrip(" ").startswith("\n")
     )
     if len(filtered) < len(string):
         result.insert(0, "")
@@ -49,18 +46,18 @@ def pair_with_simple_data_value(string):
             value, tail = multi_string_data(tail)
         else:
             value = get_value(enum)
-        return (string_data(head), value), tail
+        return (string_value(head), value), tail
 
-    return choice(separate(string, "\n")[0].find(": ") != -1, _get_pair, empty)(string)
+    return choice(separate(string, "\n")[0].find(": ") != -1, _get_pair, none)(string)
 
 
 def pair_with_complicate_data_value(string):
     def _get_pair(stream):
         key, tail = separate(stream, ":\n")
         value, tail = choice(tail.strip().startswith("-"), get_list, get_dict)(tail)
-        return (string_data(key), value), tail
+        return (string_value(key), value), tail
 
-    return choice(separate(string, "\n")[0].strip().endswith(":"), _get_pair, empty)(string)
+    return choice(separate(string, "\n")[0].strip().endswith(":"), _get_pair, none)(string)
 
 
 def pair_data(string):
@@ -68,7 +65,7 @@ def pair_data(string):
 
 
 def list_data(string):
-    result = choice(string.lstrip().startswith("-"), get_list, empty)(string)
+    result = choice(string.lstrip().startswith("-"), get_list, none)(string)
     return result[0] if result else None
 
 
@@ -80,18 +77,18 @@ def get_list(string):
         return get_value(result), stream
 
     string = clear_empty_line(string)
-    return till(string, collector, partial(equal_indent, indent=get_indent(string)))
+    return multi(string, collector, partial(equal_indent, indent=get_indent(string)))
 
 
 def get_dict(string):
     string = clear_empty_line(string)
-    enum, tail = till(string, pair_data, partial(equal_indent, indent=get_indent(string)))
+    enum, tail = multi(string, pair_data, partial(equal_indent, indent=get_indent(string)))
     return dict(enum), tail
 
 
 def loads(string):
     string = remove_comment(string.rstrip())
-    return choice_one(string, lambda x: list_data(x), lambda x: dict(multi(clear_empty_line(x), pair_data)))
+    return choice_one(string, lambda x: list_data(x), lambda x: dict(left(*multi(clear_empty_line(x), pair_data))))
 
 
 def load(file_obj):

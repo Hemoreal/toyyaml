@@ -2,7 +2,7 @@
 
 from functools import partial
 
-from .base import multi, surround, choice_one, separate, choice, empty
+from .base import multi, surround, choice_one, separate, left
 
 
 def get_enum(string, separate_symbol):
@@ -11,17 +11,17 @@ def get_enum(string, separate_symbol):
 
 
 def get_list(string, separate_symbol=","):
-    return multi(string, partial(get_enum, separate_symbol=separate_symbol))
+    return left(*multi(string, partial(get_enum, separate_symbol=separate_symbol)))
 
 
-def string_data(string):
-    result = surround(string, '"', '"')
-    return result if result else string.strip()
+def string_value(string):
+    string = string.strip()
+    return string[1:-1] if surround(string, '"', '"') else string
 
 
 def list_data(string):
-    result = surround(string.strip(), "[", "]")
-    return choice(result, get_list, empty)(result)
+    string = string.strip()
+    return get_list(string[1:-1]) if surround(string, "[", "]") else None
 
 
 def int_data(string):
@@ -42,5 +42,14 @@ def empty_data(string):
     return None if string.strip() else ""
 
 
+def strip_comment(string):
+    if not string or string.startswith(" #"):
+        return ""
+    if string.startswith("\""):
+        data, tail = separate(string[1:], "\"")
+        return "\"" + data + "\"" + strip_comment(tail)
+    return string[0] + strip_comment(string[1:])
+
+
 def get_value(string):
-    return choice_one(string, empty_data, list_data, int_data, float_data, string_data)
+    return choice_one(strip_comment(string), empty_data, list_data, int_data, float_data, string_value)

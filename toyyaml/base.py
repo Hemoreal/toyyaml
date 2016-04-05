@@ -9,7 +9,7 @@ def right(_, b):
     return b
 
 
-def empty(_):
+def none(_):
     return None
 
 
@@ -21,21 +21,11 @@ def clear_empty_line(string):
     return string
 
 
-def multi(string, cut, skip_empty_line=True):
-    result = list()
-    while string:
-        enum, string = cut(string)
-        result.append(enum)
-        string = clear_empty_line(string) if skip_empty_line else string
-    return result
-
-
-def till(string, cut, condition, skip_empty_line=True):
+def multi(string, collector, condition=lambda x: True):
     result = list()
     while string and condition(string):
-        enum, string = cut(string)
-        result.append(enum)
-        string = clear_empty_line(string) if skip_empty_line else string
+        value, string = collector(string)
+        result.append(value)
     return result, string
 
 
@@ -44,14 +34,11 @@ def choice(condition, a, b):
 
 
 def choice_one(string, *args):
-    def _get_result(stream):
-        result = args[0](stream)
-        return result if result is not None else choice_one(stream, *args[1:])
-    return choice(args, _get_result, empty)(string)
+    return args[0](string) or choice_one(string, *args[1:]) if args else None
 
 
 def surround(string, start, end):
-    return string[0] == start and string[-1] == end and string[1:-1]
+    return string.startswith(start) and string.endswith(end)
 
 
 def separate(string, symbol, reverse=False, padding=True):
@@ -61,3 +48,7 @@ def separate(string, symbol, reverse=False, padding=True):
 
 def fill(enums):
     return enums[0], enums[1] if len(enums) > 1 else ""
+
+
+def startswith(string, *symbols):
+    return string.startswith(symbols[0]) or startswith(string, *symbols[1:]) if symbols else False
