@@ -1,1 +1,1 @@
-from toyyaml import load, loads
+from .toyyaml import load, loads

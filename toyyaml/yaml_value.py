@@ -1,17 +1,14 @@
 # coding: utf8
-
-from functools import partial
-
-from .base import multi, surround, choice_one, separate, left
+from .base import multi, surround, choice_one, separate, left, right, each, sequence_string, startswith, unit, strip_comment
 
 
 def get_enum(string, separate_symbol):
-    enum, string = separate(string, separate_symbol)
-    return get_value(enum), string
+    data, tail = sequence_string(string, lambda x: not x.startswith(separate_symbol))
+    return get_value(data), tail[len(separate_symbol):]
 
 
 def get_list(string, separate_symbol=","):
-    return left(*multi(string, partial(get_enum, separate_symbol=separate_symbol)))
+    return left(*multi(string, lambda x: get_enum(x, separate_symbol)))
 
 
 def string_value(string):
@@ -40,15 +37,6 @@ def float_data(string):
 
 def empty_data(string):
     return None if string.strip() else ""
-
-
-def strip_comment(string):
-    if not string or string.startswith(" #"):
-        return ""
-    if string.startswith("\""):
-        data, tail = separate(string[1:], "\"")
-        return "\"" + data + "\"" + strip_comment(tail)
-    return string[0] + strip_comment(string[1:])
 
 
 def get_value(string):
